@@ -52,13 +52,23 @@ public:
 class midi_in_jack final : public midi_in_api
 {
 public:
-  midi_in_jack(std::string_view cname, unsigned int queueSizeLimit)
+  midi_in_jack(
+      std::string_view cname, unsigned int queueSizeLimit, jack_client_t* client = nullptr)
       : midi_in_api{&data, queueSizeLimit}
   {
     // TODO do like the others
     data.rtMidiIn = &inputData_;
     data.port = nullptr;
-    data.client = nullptr;
+
+    if (client == nullptr)
+    {
+      data.client = nullptr;
+    }
+    else
+    {
+      data.client = client;
+    }
+
     this->clientName = cname;
 
     connect();
@@ -301,10 +311,20 @@ private:
 class midi_out_jack final : public midi_out_api
 {
 public:
-  midi_out_jack(std::string_view cname)
+  midi_out_jack(std::string_view cname, jack_client_t* client = nullptr)
   {
     data.port = nullptr;
     data.client = nullptr;
+
+    if (client == nullptr)
+    {
+      data.client = nullptr;
+    }
+    else
+    {
+      data.client = client;
+    }
+
     this->clientName = cname;
 
     connect();
